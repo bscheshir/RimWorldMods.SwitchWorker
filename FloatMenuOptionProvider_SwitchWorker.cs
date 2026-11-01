@@ -1,7 +1,4 @@
 ﻿using RimWorld;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -29,53 +26,21 @@ namespace SwitchWorker
             Pawn pawn = context.FirstSelectedPawn;
             if (pawn == null || pawn.Map == null) return null;
 
-            Pawn currentCreator = targetThing.Creator;
-            Bill_ProductionWithUft bill = targetThing.BoundBill;
-            SkillDef skillDef = bill.recipe.workSkill;
-
-            string nameString = pawn.LabelShortCap;
-            if (pawn.story != null && !pawn.story.TitleShort.NullOrEmpty())
-            {
-                nameString += $", {pawn.story.TitleShort}";
-            }
-
-            if (pawn.IsSlave)
-            {
-                nameString = $"<color=#E5C565>{nameString}</color>";
-            }
-
-            string skillInfo = "";
-            if (skillDef != null && pawn.skills != null)
-            {
-                skillInfo = $" [{skillDef.LabelCap}: {pawn.skills.GetSkill(skillDef).Level}]";
-            }
+            string label = SwitchWorkerCalculator.BuildWorkerLabel(targetThing, targetThing.BoundBill, targetThing.Creator, pawn, out string reason);
 
             Pawn localPawn = pawn;
-            string reason = SwitchWorkerCalculator.GetWorkerBlockReason(targetThing, bill, currentCreator, pawn);
-
             FloatMenuOption opt = null;
 
-            if (reason == "SwitchWorker_CurrentCreator")
+            if (reason == "SwitchWorker_CurrentCreator" || reason != null)
             {
-                int currentWorkLeftSeconds = Mathf.CeilToInt(targetThing.workLeft / 60f);
-                string currentCreatorLocalized = $"<color=#68BB68>{"SwitchWorker_CurrentCreator".Translate()}</color>";
-
-                // Перенос \n разделяет информацию на две строки
-                string label = $"{nameString}{skillInfo}\n({currentCreatorLocalized}: {currentWorkLeftSeconds} ед.)";
-
                 opt = new FloatMenuOption(label, null, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0);
                 opt.Disabled = true;
             }
-            else if (reason == null)
+            else
             {
-                int newWorkLeftTicks = SwitchWorkerCalculator.CalculateNewWorkLeft(targetThing, bill, currentCreator, pawn);
-                int newWorkLeftSeconds = Mathf.CeilToInt((float)newWorkLeftTicks / 60f);
-
-                // Перенос \n перед текстом остатка работы для компактности интерфейса
-                string label = "SwitchWorker_ButtonLabel".Translate() + $" {pawn.LabelShortCap}\n({"SwitchWorker_ResultWorkLeft".Translate(newWorkLeftSeconds)})";
-
                 opt = new FloatMenuOption(label, () =>
                 {
+                    int newWorkLeftTicks = SwitchWorkerCalculator.CalculateNewWorkLeft(targetThing, targetThing.BoundBill, targetThing.Creator, localPawn);
                     targetThing.Creator = localPawn;
                     targetThing.workLeft = newWorkLeftTicks;
                     SoundDefOf.Tick_High.PlayOneShotOnCamera();
@@ -83,22 +48,13 @@ namespace SwitchWorker
 
                 opt.Disabled = false;
             }
-            else
-            {
-                // Перенос \n перед выводом причин блокировок
-                string label = $"{nameString}{skillInfo}\n({reason})";
-                opt = new FloatMenuOption(label, null, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0);
-                opt.Disabled = true;
-            }
 
             if (opt != null)
             {
                 opt.extraPartWidth = 32f;
-
                 opt.extraPartOnGUI = (Rect rect) =>
                 {
                     Rect iconRect = new Rect(rect.x + 4f, rect.y + 4f, 24f, 24f);
-
                     Widgets.ThingIcon(iconRect, localPawn);
                     return false;
                 };

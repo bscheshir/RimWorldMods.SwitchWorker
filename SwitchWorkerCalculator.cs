@@ -8,10 +8,58 @@ namespace SwitchWorker
 {
     public static class SwitchWorkerCalculator
     {
-        // Определение причин недоступности (вынесено в единую точку для гизмо и ПКМ)
+        // Единая точка сборки двухстрочного текста для гизмо и ПКМ
+        public static string BuildWorkerLabel(UnfinishedThing thing, Bill_ProductionWithUft bill, Pawn currentCreator, Pawn pawn, out string reason)
+        {
+            SkillDef skillDef = bill.recipe.workSkill;
+
+            // Базовая строка: Кличка, Профессия
+            string text = pawn.LabelShortCap;
+            if (pawn.story != null && !pawn.story.TitleShort.NullOrEmpty())
+            {
+                text += $", {pawn.story.TitleShort}";
+            }
+
+            // Окрашивание раба в ванильный желтый цвет
+            if (pawn.IsSlave)
+            {
+                text = $"<color=#E5C565>{text}</color>";
+            }
+
+            // Добавление навыка [Ремесло: Х]
+            if (skillDef != null && pawn.skills != null)
+            {
+                text += $" [{skillDef.LabelCap}: {pawn.skills.GetSkill(skillDef).Level}]";
+            }
+
+            reason = GetWorkerBlockReason(thing, bill, currentCreator, pawn);
+
+            if (reason == "SwitchWorker_CurrentCreator")
+            {
+                int currentWorkLeftSeconds = Mathf.CeilToInt(thing.workLeft / 60f);
+                string currentCreatorLocalized = $"<color=#68BB68>{"SwitchWorker_CurrentCreator".Translate()}</color>";
+                string workLeftLocalized = "SwitchWorker_ResultWorkLeft".Translate(currentWorkLeftSeconds);
+
+                return $"{text}\n({currentCreatorLocalized}: {workLeftLocalized})";
+            }
+
+            if (reason == null)
+            {
+                int newWorkLeftTicks = CalculateNewWorkLeft(thing, bill, currentCreator, pawn);
+                int newWorkLeftSeconds = Mathf.CeilToInt((float)newWorkLeftTicks / 60f);
+                string workLeftLocalized = "SwitchWorker_ResultWorkLeft".Translate(newWorkLeftSeconds);
+
+                return $"{text}\n({workLeftLocalized})";
+            }
+
+            // Если пешка недоступна — причина выводится на второй строке
+            return $"{text}\n({reason})";
+        }
+
+        // Единые правила проверки доступности
         public static string GetWorkerBlockReason(UnfinishedThing thing, Bill_ProductionWithUft bill, Pawn currentCreator, Pawn pawn)
         {
-            if (pawn == currentCreator) return "SwitchWorker_CurrentCreator"; // Фильтр текущего мастера
+            if (pawn == currentCreator) return "SwitchWorker_CurrentCreator";
 
             WorkTypeDef workType = BillUtility.GetWorkgiver(bill.billStack.billGiver).workType;
             SkillDef skillDef = bill.recipe.workSkill;
@@ -34,10 +82,10 @@ namespace SwitchWorker
                 return "SwitchWorker_CantWork_NoPath".Translate();
             }
 
-            return null; // Ошибок нет, пешка может взяться за работу
+            return null;
         }
 
-        // Определение полной базовой стоимости работы для рецепта
+        // Вычисление полной базовой стоимости рецепта
         public static bool TryGetTotalWorkAmount(UnfinishedThing thing, Bill_ProductionWithUft bill, out float totalWork)
         {
             totalWork = 0f;
@@ -60,7 +108,7 @@ namespace SwitchWorker
             return false;
         }
 
-        // Расчет нового остатка работы с учетом штрафов и разницы навыков
+        // Пропорциональный расчет нового остатка тиков работы
         public static int CalculateNewWorkLeft(UnfinishedThing thing, Bill_ProductionWithUft bill, Pawn currentCreator, Pawn newWorker)
         {
             float workLeft = thing.workLeft;
@@ -90,6 +138,11 @@ namespace SwitchWorker
                 {
                     currentLevel = Mathf.Clamp(currentCreator.skills.GetSkill(skillDef).Level, 0, 20);
                 }
+                else
+                {
+                    currentLevel = 0; // Защита от отсутствия старого мастера на карте
+                }
+
                 if (newWorker?.skills != null)
                 {
                     newLevel = Mathf.Clamp(newWorker.skills.GetSkill(skillDef).Level, 0, 20);
