@@ -16,16 +16,39 @@
 		</li>
 	</modDependencies>
 	<description>
+Позволяет вручную переназначить мастера для незавершенного предмета (заготовки).
 
-		Позволяет вручную переназначить мастера для незавершенного предмета (заготовки) прямо через контекстную кнопку.
+Больше не нужно ждать, пока конкретный колонист вернется из лазарета или освободится от других дел, чтобы доделать брошенный в прошлом году шлем или куртку!
 
-		Больше не нужно ждать, пока конкретный колонист вернется из лазарета или освободится от других дел, чтобы доделать шлем или куртку. 
-		При смене создателя остаток работы динамически пересчитывается на основе разницы навыков между старым и новым мастером, а также базового штрафа из настроек мода. 
-		
+Назначить мастера для незавершённого предмета можно как из меню при выборе предмета, так и выбрав желаемую пешку, а затем вызвав контестаное меню для незаконченного предмета.
 
-		Вдохновлён модом "Switch Worker" от kathanon, полностью переписан под современные версии игры и снабжен гибкими настройками математики прогресса.
+При смене создателя остаток работы динамически пересчитывается на основе разницы навыков между старым и новым мастером, а также базового штрафа из настроек мода (по умолчанию теряется 25% времени работы, пересчёт от навыков на 75% эффективен).
 
-		В отличие от оригинала kathanon, добавлены полноценная локализация (RU/EN) и внешние ресурсы для удобного перевода.
+Вдохновлён модом "Switch Worker" от kathanon, полностью переписан под современные версии игры и снабжен гибкими настройками математики прогресса.
 
+В отличие от версии kathanon, добавлены полноценная локализация (RU/EN) и внешние ресурсы для удобного перевода.
+
+-----------------------------------------
+Allows you to manually reassign a worker for any unfinished item (crafting bill).
+
+No more waiting for a specific colonist to recover in a hospital or finish other tasks just to complete a helmet or duster left abandoned last year!
+
+You can assign a new worker either from the gizmo menu when selecting the unfinished item itself, or by selecting the desired pawn and opening the context menu for that item.
+
+When switching creators, the remaining work is dynamically recalculated based on the skill difference between the old and new workers, along with a customizable base progress loss penalty from the mod settings (by default, 25% of work time is lost, and the skill-based recalculation has a 75% influence efficiency).
+
+Inspired by the original "Switch Worker" mod by kathanon, fully rewritten for modern game versions and equipped with flexible progress math configuration.
+
+Unlike kathanon's version, it features full localization support (RU/EN) and external translation-friendly resources.
+
+-----------------------------------------
+Supported Languages:
+- [EN] English
+- [RU] Russian / Русский
+
+-----------------------------------------
+Source Code / Исходный код:
+https://github.com/bscheshir/RimWorldMods.SwitchWorker
+-----------------------------------------
 	</description>
 </ModMetaData>
