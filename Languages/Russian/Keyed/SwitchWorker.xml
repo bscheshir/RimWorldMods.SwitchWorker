@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+	<SwitchWorker_ModName>Смена Мастера (Switch Worker)</SwitchWorker_ModName>
+	<SwitchWorker_LogCoreInit>[Switch Worker] Успешно инициализирован патч Harmony.</SwitchWorker_LogCoreInit>
+
+	<!-- Настройки -->
+	<SwitchWorker_WorkLossMultiplier>Базовая потеря прогресса при смене мастера: {0}% выполненной работы</SwitchWorker_WorkLossMultiplier>
+	<SwitchWorker_SkillInfluenceMultiplier>Влияние разницы навыков на штраф: {0}%</SwitchWorker_SkillInfluenceMultiplier>
+
+	<!-- Интерфейс кнопки -->
+	<SwitchWorker_ButtonLabel>Сменить мастера</SwitchWorker_ButtonLabel>
+	<SwitchWorker_ButtonDesc>Сменить назначенного работника для этого незавершенного предмета. Остаток работы пересчитается в зависимости от навыков нового мастера.</SwitchWorker_ButtonDesc>
+	<SwitchWorker_ResultWorkLeft>Останется работы: {0}</SwitchWorker_ResultWorkLeft>
+
+	<!-- Разделитель -->
+	<SwitchWorker_CurrentCreator>Текущий мастер</SwitchWorker_CurrentCreator>
+
+	<!-- Причины недоступности -->
+	<SwitchWorker_CantWork_Incapacitated>Неспособен работать / Без сознания</SwitchWorker_CantWork_Incapacitated>
+	<SwitchWorker_CantWork_WorkDisabled>Выключен данный тип работы</SwitchWorker_CantWork_WorkDisabled>
+	<SwitchWorker_CantWork_LowSkill>Низкий навык: треб. {0}, у него {1}</SwitchWorker_CantWork_LowSkill>
+	<SwitchWorker_CantWork_NoPath>Не может дойти до предмета</SwitchWorker_CantWork_NoPath>
+</LanguageData>

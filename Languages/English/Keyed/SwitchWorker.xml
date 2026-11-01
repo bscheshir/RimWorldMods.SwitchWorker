@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+	<SwitchWorker_ModName>Switch Worker</SwitchWorker_ModName>
+	<SwitchWorker_LogCoreInit>[Switch Worker] Harmony patches successfully initialized.</SwitchWorker_LogCoreInit>
+	<SwitchWorker_WorkLossMultiplier>Base work loss when switching workers: {0}% of completed work</SwitchWorker_WorkLossMultiplier>
+	<SwitchWorker_SkillInfluenceMultiplier>Skill difference impact on penalty: {0}%</SwitchWorker_SkillInfluenceMultiplier>
+	<SwitchWorker_ButtonLabel>Switch worker</SwitchWorker_ButtonLabel>
+	<SwitchWorker_ButtonDesc>Change the assigned worker for this unfinished item. The remaining work will be recalculated based on the new worker's skills.</SwitchWorker_ButtonDesc>
+	<SwitchWorker_ResultWorkLeft>Work left: {0}</SwitchWorker_ResultWorkLeft>
+	<SwitchWorker_CurrentCreator>Current worker</SwitchWorker_CurrentCreator>
+	<SwitchWorker_CantWork_Incapacitated>Incapaciated / Dead / Mental break</SwitchWorker_CantWork_Incapacitated>
+	<SwitchWorker_CantWork_WorkDisabled>This work type is disabled</SwitchWorker_CantWork_WorkDisabled>
+	<SwitchWorker_CantWork_LowSkill>Low skill: req. {0}, has {1}</SwitchWorker_CantWork_LowSkill>
+	<SwitchWorker_CantWork_NoPath>Cannot reach the item</SwitchWorker_CantWork_NoPath>
+</LanguageData>

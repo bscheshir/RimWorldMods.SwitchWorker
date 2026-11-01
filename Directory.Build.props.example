@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Локальный файл конфигов-->
+<Project>
+	<PropertyGroup>
+		<AssemblyName>SwitchWorker</AssemblyName>
+		<RimWorldPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld</RimWorldPath>
+		<ModFolder>$(RimWorldPath)\Mods\$(AssemblyName)</ModFolder>
+		<ReferencesFolder>..\_References</ReferencesFolder>
+	</PropertyGroup>
+</Project>

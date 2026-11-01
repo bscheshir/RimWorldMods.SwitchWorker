@@ -1,0 +1,99 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<!-- Мультитаргетинг под RimWorld 1.6 (.NET Framework) и 1.7 (.NET 10) -->
+		<TargetFrameworks>net472;net10.0</TargetFrameworks>
+		<OutputType>Library</OutputType>
+		<LangVersion>latest</LangVersion>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<!-- Отключаем генерацию отладочных файлов .pdb в выходной папке -->
+		<DebugType>none</DebugType>
+		<DebugSymbols>false</DebugSymbols>
+		<!-- Отключаем создание файла зависимостей .deps.json для .NET 10 -->
+		<GenerateDependencyFile>false</GenerateDependencyFile>
+	</PropertyGroup>
+
+	<!-- АВТО-ОТПРАВКА В СТИМ: Пути формируются автоматически на основе $(ModFolder) из внешнего .props -->
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net472'">
+		<OutputPath>$(ModFolder)\1.6\Assemblies\</OutputPath>
+		<DefineConstants>RW_1_6</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
+		<OutputPath>$(ModFolder)\1.7\Assemblies\</OutputPath>
+		<DefineConstants>RW_1_7</DefineConstants>
+	</PropertyGroup>
+
+	<!-- СВЯЗЬ С РЕФЕРЕНСАМИ 1.6 (.NET Framework 4.7.2) -->
+	<ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+		<Reference Include="Assembly-CSharp">
+			<HintPath>$(ReferencesFolder)\1.6\Assembly-CSharp.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="0Harmony">
+			<HintPath>$(ReferencesFolder)\1.6\0Harmony.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine">
+			<HintPath>$(ReferencesFolder)\1.6\UnityEngine.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.CoreModule">
+			<HintPath>$(ReferencesFolder)\1.6\UnityEngine.CoreModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.IMGUIModule">
+			<HintPath>$(ReferencesFolder)\1.6\UnityEngine.IMGUIModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.TextRenderingModule">
+			<HintPath>$(ReferencesFolder)\1.6\UnityEngine.TextRenderingModule.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+	</ItemGroup>
+
+	<!-- СВЯЗЬ С РЕФЕРЕНСАМИ 1.7 (.NET 10.0) -->
+	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+		<Reference Include="Assembly-CSharp">
+			<HintPath>$(ReferencesFolder)\1.7\Assembly-CSharp.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="0Harmony">
+			<HintPath>$(ReferencesFolder)\1.7\0Harmony.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="Waylith.UnityCompat">
+			<HintPath>$(ReferencesFolder)\1.7\Waylith.UnityCompat.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityStubs">
+			<HintPath>$(ReferencesFolder)\1.7\UnityStubs.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+	</ItemGroup>
+
+	<!-- Сборка ресурсов ПОСЛЕ компиляции -->
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<!-- Файлы манифеста About -->
+		<ItemGroup>
+			<AboutFiles Include="About\**\*.*" />
+		</ItemGroup>
+		<Copy SourceFiles="@(AboutFiles)" DestinationFiles="@(AboutFiles->'$(ModFolder)\About\%(RecursiveDir)%(Filename)%(Extension)')" />
+
+		<!-- Файлы локализации -->
+		<ItemGroup>
+			<LanguageFiles Include="Languages\**\*.*" />
+		</ItemGroup>
+		<Copy SourceFiles="@(LanguageFiles)" DestinationFiles="@(LanguageFiles->'$(ModFolder)\Languages\%(RecursiveDir)%(Filename)%(Extension)')" />
+
+		<!-- Файлы игровых определений (Defs) -->
+		<ItemGroup>
+			<DefFiles Include="Defs\**\*.*" />
+		</ItemGroup>
+		<Copy SourceFiles="@(DefFiles)" DestinationFiles="@(DefFiles->'$(ModFolder)\Defs\%(RecursiveDir)%(Filename)%(Extension)')" />
+
+		<!-- Файлы текстур -->
+		<ItemGroup>
+			<TextureFiles Include="Textures\**\*.*" />
+		</ItemGroup>
+		<Copy SourceFiles="@(TextureFiles)" DestinationFiles="@(TextureFiles->'$(ModFolder)\Textures\%(RecursiveDir)%(Filename)%(Extension)')" />
+	</Target>
+</Project>
