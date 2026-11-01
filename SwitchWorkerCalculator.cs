@@ -1,12 +1,42 @@
-using System.Linq;
 using RimWorld;
+using System.Linq;
 using UnityEngine;
 using Verse;
+using Verse.AI;
 
 namespace SwitchWorker
 {
     public static class SwitchWorkerCalculator
     {
+        // Определение причин недоступности (вынесено в единую точку для гизмо и ПКМ)
+        public static string GetWorkerBlockReason(UnfinishedThing thing, Bill_ProductionWithUft bill, Pawn currentCreator, Pawn pawn)
+        {
+            if (pawn == currentCreator) return "SwitchWorker_CurrentCreator"; // Фильтр текущего мастера
+
+            WorkTypeDef workType = BillUtility.GetWorkgiver(bill.billStack.billGiver).workType;
+            SkillDef skillDef = bill.recipe.workSkill;
+            int minSkill = bill.recipe.skillRequirements?.FirstOrDefault(x => x.skill == skillDef)?.minLevel ?? 0;
+
+            if (pawn.Downed || pawn.InMentalState || pawn.Dead)
+            {
+                return "SwitchWorker_CantWork_Incapacitated".Translate();
+            }
+            if (pawn.workSettings != null && !pawn.workSettings.WorkIsActive(workType))
+            {
+                return "SwitchWorker_CantWork_WorkDisabled".Translate();
+            }
+            if (skillDef != null && pawn.skills != null && pawn.skills.GetSkill(skillDef).Level < minSkill)
+            {
+                return "SwitchWorker_CantWork_LowSkill".Translate(minSkill, pawn.skills.GetSkill(skillDef).Level);
+            }
+            if (!pawn.CanReach(thing, PathEndMode.Touch, Danger.Some))
+            {
+                return "SwitchWorker_CantWork_NoPath".Translate();
+            }
+
+            return null; // Ошибок нет, пешка может взяться за работу
+        }
+
         // Определение полной базовой стоимости работы для рецепта
         public static bool TryGetTotalWorkAmount(UnfinishedThing thing, Bill_ProductionWithUft bill, out float totalWork)
         {
@@ -24,10 +54,7 @@ namespace SwitchWorker
                 }
             }
 
-            if (totalWork > 0)
-            {
-                return true;
-            }
+            if (totalWork > 0) return true;
 
             totalWork = 0f;
             return false;
@@ -40,13 +67,15 @@ namespace SwitchWorker
             float workDone = 0f;
             float totalWork = 0f;
 
-            if (!TryGetTotalWorkAmount(thing, bill, out totalWork))
+            if (TryGetTotalWorkAmount(thing, bill, out totalWork))
             {
-                // Если полную стоимость узнать нельзя (разборка), остаток не меняется
-                return Mathf.RoundToInt(workLeft);
+                workDone = Mathf.Max(0f, totalWork - workLeft);
             }
-
-            workDone = Mathf.Max(0f, totalWork - workLeft);
+            else
+            {
+                totalWork = workLeft;
+                workDone = 0f;
+            }
 
             float kLoss = SwitchWorkerMod.Settings.workLossMultiplier;
             float kSkill = SwitchWorkerMod.Settings.skillInfluenceMultiplier;
@@ -67,21 +96,13 @@ namespace SwitchWorker
                 }
             }
 
-            // Корректная формула: базовые потери работы при переносе чертежей
             float baseLoss = workDone * kLoss;
-
-            // Разница навыков влияет на то, сколько ЕЩЕ работы будет потеряно или сэкономлено
-            // Максимальный штраф/бонус от навыка ограничен коэффициентом kSkill
-            float skillFactor = (currentLevel - newLevel) / 20f; // Положительный, если новый хуже
+            float skillFactor = (currentLevel - newLevel) / 20f;
             float skillLossModification = baseLoss * (skillFactor * kSkill);
 
-            // Итоговый штраф в тиках работы
             float finalWorkLoss = Mathf.Max(0f, baseLoss + skillLossModification);
-
-            // Новый остаток работы = старый остаток + итоговый штраф
             float targetWorkLeft = workLeft + finalWorkLoss;
 
-            // Жесткое ограничение рамками полной стоимости задачи
             return Mathf.RoundToInt(Mathf.Clamp(targetWorkLeft, workLeft, totalWork));
         }
     }

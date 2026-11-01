@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Verse;
-using Verse.AI;
 using Verse.Sound;
 
 namespace SwitchWorker
@@ -28,10 +27,7 @@ namespace SwitchWorker
             Bill_ProductionWithUft bill = thing.BoundBill;
             Pawn currentCreator = thing.Creator;
             Map map = thing.Map;
-
-            WorkTypeDef workType = BillUtility.GetWorkgiver(bill.billStack.billGiver).workType;
             SkillDef skillDef = bill.recipe.workSkill;
-            int minSkill = bill.recipe.skillRequirements?.FirstOrDefault(x => x.skill == skillDef)?.minLevel ?? 0;
 
             List<FloatMenuOption> availableWorkers = new List<FloatMenuOption>();
             List<FloatMenuOption> currentWorkerOption = new List<FloatMenuOption>();
@@ -39,92 +35,43 @@ namespace SwitchWorker
 
             float workLeft = thing.workLeft;
 
-            // Получение уровня навыка пешки
-            int GetPawnSkill(Pawn p)
-            {
-                if (skillDef != null && p.skills != null)
-                {
-                    return p.skills.GetSkill(skillDef).Level;
-                }
-                return 0;
-            }
+            int GetPawnSkill(Pawn p) => (skillDef != null && p.skills != null) ? p.skills.GetSkill(skillDef).Level : 0;
+            int GetColonistBarOrder(Pawn p) => p.playerSettings != null ? p.playerSettings.displayOrder : 0;
 
-            // Получение индекса отображения на панели колонистов
-            int GetColonistBarOrder(Pawn p)
-            {
-                if (p.playerSettings != null)
-                {
-                    return p.playerSettings.displayOrder;
-                }
-                return 0;
-            }
-
-            // Сортировка по убыванию навыка, затем по порядку на панели
             var sortedPawns = map.mapPawns.FreeColonists
                 .OrderByDescending(p => GetPawnSkill(p))
                 .ThenBy(p => GetColonistBarOrder(p));
 
             foreach (Pawn pawn in sortedPawns)
             {
-                // Стандартное ванильное имя (Кличка)
                 string nameString = pawn.LabelShortCap;
 
-                // Добавление краткой профессии
                 if (pawn.story != null && !pawn.story.TitleShort.NullOrEmpty())
                 {
                     nameString += $", {pawn.story.TitleShort}";
                 }
-
-                // Цветовое выделение рабов (желтый цвет)
                 if (pawn.IsSlave)
                 {
                     nameString = $"<color=#E5C565>{nameString}</color>";
                 }
 
-                // Формирование строки навыка
-                string skillInfo = "";
-                if (skillDef != null && pawn.skills != null)
-                {
-                    skillInfo = $" [{skillDef.LabelCap}: {pawn.skills.GetSkill(skillDef).Level}]";
-                }
-
+                string skillInfo = (skillDef != null && pawn.skills != null) ? $" [{skillDef.LabelCap}: {pawn.skills.GetSkill(skillDef).Level}]" : "";
                 Pawn localPawn = pawn;
 
-                if (pawn == currentCreator)
+                // Получаем причину недоступности из единой точки
+                string reason = SwitchWorkerCalculator.GetWorkerBlockReason(thing, bill, currentCreator, pawn);
+
+                if (reason == "SwitchWorker_CurrentCreator")
                 {
                     int currentWorkLeftSeconds = Mathf.CeilToInt(workLeft / 60f);
-
-                    // Выделяем зеленым цветом (#68BB68) только само словосочетание "Текущий мастер"
                     string currentCreatorLocalized = $"<color=#68BB68>{"SwitchWorker_CurrentCreator".Translate()}</color>";
                     string currentLabel = $"{nameString}{skillInfo} ({currentCreatorLocalized}: {currentWorkLeftSeconds} ед.)";
 
                     var opt = new FloatMenuOption(currentLabel, null, localPawn, Color.white, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0);
                     opt.Disabled = true;
                     currentWorkerOption.Add(opt);
-                    continue;
                 }
-
-                // Проверка доступности пешки
-                string reason = null;
-                if (pawn.Downed || pawn.InMentalState || pawn.Dead)
-                {
-                    reason = "SwitchWorker_CantWork_Incapacitated".Translate();
-                }
-                else if (pawn.workSettings != null && !pawn.workSettings.WorkIsActive(workType))
-                {
-                    reason = "SwitchWorker_CantWork_WorkDisabled".Translate();
-                }
-                else if (skillDef != null && pawn.skills != null && pawn.skills.GetSkill(skillDef).Level < minSkill)
-                {
-                    reason = "SwitchWorker_CantWork_LowSkill".Translate(minSkill, pawn.skills.GetSkill(skillDef).Level);
-                }
-                else if (!pawn.CanReach(thing, PathEndMode.Touch, Danger.Some))
-                {
-                    reason = "SwitchWorker_CantWork_NoPath".Translate();
-                }
-
-                // Распределение по спискам доступности
-                if (reason == null)
+                else if (reason == null)
                 {
                     int newWorkLeftTicks = SwitchWorkerCalculator.CalculateNewWorkLeft(thing, bill, currentCreator, pawn);
                     int newWorkLeftSeconds = Mathf.CeilToInt((float)newWorkLeftTicks / 60f);
@@ -143,23 +90,18 @@ namespace SwitchWorker
                 else
                 {
                     string label = $"{nameString}{skillInfo} ({reason})";
-
                     var opt = new FloatMenuOption(label, null, localPawn, Color.white, MenuOptionPriority.Default, null, null, 0f, null, null, true, 0);
                     opt.Disabled = true;
                     unavailableWorkers.Add(opt);
                 }
             }
 
-            // Формирование и вывод итогового списка
             List<FloatMenuOption> finalMenu = new List<FloatMenuOption>();
             finalMenu.AddRange(availableWorkers);
             finalMenu.AddRange(currentWorkerOption);
             finalMenu.AddRange(unavailableWorkers);
 
-            if (finalMenu.Any())
-            {
-                Find.WindowStack.Add(new FloatMenu(finalMenu));
-            }
+            if (finalMenu.Any()) Find.WindowStack.Add(new FloatMenu(finalMenu));
         }
     }
 }
