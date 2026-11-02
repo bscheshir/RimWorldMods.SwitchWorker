@@ -13,20 +13,17 @@ namespace SwitchWorker
         {
             SkillDef skillDef = bill.recipe.workSkill;
 
-            // Базовая строка: Кличка, Профессия
             string text = pawn.LabelShortCap;
             if (pawn.story != null && !pawn.story.TitleShort.NullOrEmpty())
             {
                 text += $", {pawn.story.TitleShort}";
             }
 
-            // Окрашивание раба в ванильный желтый цвет
             if (pawn.IsSlave)
             {
                 text = $"<color=#E5C565>{text}</color>";
             }
 
-            // Добавление навыка [Ремесло: Х]
             if (skillDef != null && pawn.skills != null)
             {
                 text += $" [{skillDef.LabelCap}: {pawn.skills.GetSkill(skillDef).Level}]";
@@ -52,23 +49,28 @@ namespace SwitchWorker
                 return $"{text}\n({workLeftLocalized})";
             }
 
-            // Если пешка недоступна — причина выводится на второй строке
             return $"{text}\n({reason})";
         }
 
         // Единые правила проверки доступности
         public static string GetWorkerBlockReason(UnfinishedThing thing, Bill_ProductionWithUft bill, Pawn currentCreator, Pawn pawn)
         {
-            if (pawn == currentCreator) return "SwitchWorker_CurrentCreator";
+            // Сравнение идет строго по ссылкам на объекты пешек, без разницы на какой они карте
+            if (currentCreator != null && pawn == currentCreator)
+            {
+                return "SwitchWorker_CurrentCreator";
+            }
+
+            // Базовые проверки состояния целевой пешки (для которой генерируется пункт)
+            if (pawn.Map == null || pawn.Downed || pawn.InMentalState || pawn.Dead)
+            {
+                return "SwitchWorker_CantWork_Incapacitated".Translate();
+            }
 
             WorkTypeDef workType = BillUtility.GetWorkgiver(bill.billStack.billGiver).workType;
             SkillDef skillDef = bill.recipe.workSkill;
             int minSkill = bill.recipe.skillRequirements?.FirstOrDefault(x => x.skill == skillDef)?.minLevel ?? 0;
 
-            if (pawn.Downed || pawn.InMentalState || pawn.Dead)
-            {
-                return "SwitchWorker_CantWork_Incapacitated".Translate();
-            }
             if (pawn.workSettings != null && !pawn.workSettings.WorkIsActive(workType))
             {
                 return "SwitchWorker_CantWork_WorkDisabled".Translate();
@@ -77,7 +79,9 @@ namespace SwitchWorker
             {
                 return "SwitchWorker_CantWork_LowSkill".Translate(minSkill, pawn.skills.GetSkill(skillDef).Level);
             }
-            if (!pawn.CanReach(thing, PathEndMode.Touch, Danger.Some))
+
+            // Упрощенная бинарная проверка: если предмет деспавнен, пешка на другой карте или нет пути — отказ
+            if (thing.Map == null || pawn.Map != thing.Map || !pawn.CanReach(thing, PathEndMode.Touch, Danger.Some))
             {
                 return "SwitchWorker_CantWork_NoPath".Translate();
             }
@@ -134,13 +138,14 @@ namespace SwitchWorker
 
             if (skillDef != null)
             {
+                // Читаем навыки создателя напрямую из переданного объекта (он хранится в заготовке)
                 if (currentCreator?.skills != null)
                 {
                     currentLevel = Mathf.Clamp(currentCreator.skills.GetSkill(skillDef).Level, 0, 20);
                 }
                 else
                 {
-                    currentLevel = 0; // Защита от отсутствия старого мастера на карте
+                    currentLevel = 0;
                 }
 
                 if (newWorker?.skills != null)
