@@ -18,7 +18,7 @@ namespace SwitchWorker
 
         protected override FloatMenuOption GetSingleOptionFor(Thing clickedThing, FloatMenuContext context)
         {
-            if (!(clickedThing is UnfinishedThing targetThing) || targetThing.BoundBill == null)
+            if (!(clickedThing is UnfinishedThing targetThing) || targetThing.Destroyed || targetThing.Recipe == null)
             {
                 return null;
             }
@@ -26,7 +26,7 @@ namespace SwitchWorker
             Pawn pawn = context.FirstSelectedPawn;
             if (pawn == null || pawn.Map == null) return null;
 
-            string label = SwitchWorkerCalculator.BuildWorkerLabel(targetThing, targetThing.BoundBill, targetThing.Creator, pawn, out string reason);
+            string label = SwitchWorkerCalculator.BuildWorkerLabel(targetThing, targetThing.Creator, pawn, out string reason);
 
             Pawn localPawn = pawn;
             FloatMenuOption opt = null;
@@ -40,7 +40,7 @@ namespace SwitchWorker
             {
                 opt = new FloatMenuOption(label, () =>
                 {
-                    int newWorkLeftTicks = SwitchWorkerCalculator.CalculateNewWorkLeft(targetThing, targetThing.BoundBill, targetThing.Creator, localPawn);
+                    int newWorkLeftTicks = SwitchWorkerCalculator.CalculateNewWorkLeft(targetThing, targetThing.Creator, localPawn);
                     targetThing.Creator = localPawn;
                     targetThing.workLeft = newWorkLeftTicks;
                     SoundDefOf.Tick_High.PlayOneShotOnCamera();

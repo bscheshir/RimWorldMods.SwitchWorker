@@ -10,14 +10,12 @@ namespace SwitchWorker
         [HarmonyPostfix]
         public static IEnumerable<Gizmo> Postfix(IEnumerable<Gizmo> __result, UnfinishedThing __instance)
         {
-            // Сначала возвращаем все оригинальные гизмо
             foreach (Gizmo gizmo in __result)
             {
                 yield return gizmo;
             }
 
-            // Если вещь не уничтожена
-            if (__instance != null && !__instance.Destroyed)
+            if (__instance != null && !__instance.Destroyed && __instance.Recipe != null)
             {
                 yield return new Command_SwitchWorker(__instance);
             }
