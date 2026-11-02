@@ -55,8 +55,12 @@ namespace SwitchWorker
         // Единые правила проверки доступности
         public static string GetWorkerBlockReason(UnfinishedThing thing, Bill_ProductionWithUft bill, Pawn currentCreator, Pawn pawn)
         {
-            // Сравнение идет строго по ссылкам на объекты пешек, без разницы на какой они карте
-            if (currentCreator != null && pawn == currentCreator)
+            // Защита от null-ссылок
+            if (pawn == null) return "SwitchWorker_CantWork_Incapacitated".Translate();
+
+            // Сравниваем пешек по уникальному ThingID. 
+            // Это гарантирует корректную работу, даже если прошлый мастер улетел на шаттле или ушел в караван.
+            if (currentCreator != null && pawn.ThingID == currentCreator.ThingID)
             {
                 return "SwitchWorker_CurrentCreator";
             }
@@ -138,8 +142,7 @@ namespace SwitchWorker
 
             if (skillDef != null)
             {
-                // Читаем навыки создателя напрямую из переданного объекта (он хранится в заготовке)
-                if (currentCreator?.skills != null)
+                if (currentCreator != null && !currentCreator.Destroyed && currentCreator.skills != null)
                 {
                     currentLevel = Mathf.Clamp(currentCreator.skills.GetSkill(skillDef).Level, 0, 20);
                 }

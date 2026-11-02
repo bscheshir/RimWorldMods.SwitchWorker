@@ -16,8 +16,8 @@ namespace SwitchWorker
                 yield return gizmo;
             }
 
-            // Если вещь не уничтожена и привязана к верстаку/счету
-            if (__instance != null && !__instance.Destroyed && __instance.BoundBill != null)
+            // Если вещь не уничтожена
+            if (__instance != null && !__instance.Destroyed)
             {
                 yield return new Command_SwitchWorker(__instance);
             }
