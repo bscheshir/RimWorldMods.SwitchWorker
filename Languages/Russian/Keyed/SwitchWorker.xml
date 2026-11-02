@@ -20,4 +20,6 @@
 	<SwitchWorker_CantWork_WorkDisabled>Выключен данный тип работы</SwitchWorker_CantWork_WorkDisabled>
 	<SwitchWorker_CantWork_LowSkill>Низкий навык: треб. {0}, у него {1}</SwitchWorker_CantWork_LowSkill>
 	<SwitchWorker_CantWork_NoPath>Не может дойти до предмета</SwitchWorker_CantWork_NoPath>
+
+	<SwitchWorker_ContextMenuLabel>Сменить мастера</SwitchWorker_ContextMenuLabel>
 </LanguageData>

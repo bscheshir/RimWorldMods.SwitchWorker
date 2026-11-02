@@ -26,7 +26,8 @@ namespace SwitchWorker
             Pawn pawn = context.FirstSelectedPawn;
             if (pawn == null || pawn.Map == null) return null;
 
-            string label = SwitchWorkerCalculator.BuildWorkerLabel(targetThing, targetThing.Creator, pawn, out string reason);
+            string details = SwitchWorkerCalculator.BuildWorkerLabel(targetThing, targetThing.Creator, pawn, out string reason);
+            string label = $"{"SwitchWorker_ContextMenuLabel".Translate()}\n{details}";
 
             Pawn localPawn = pawn;
             FloatMenuOption opt = null;
@@ -54,7 +55,7 @@ namespace SwitchWorker
                 opt.extraPartWidth = 32f;
                 opt.extraPartOnGUI = (Rect rect) =>
                 {
-                    Rect iconRect = new Rect(rect.x + 4f, rect.y + 4f, 24f, 24f);
+                    Rect iconRect = new Rect(rect.x + 4f, rect.y + 10f, 24f, 24f);
                     Widgets.ThingIcon(iconRect, localPawn);
                     return false;
                 };

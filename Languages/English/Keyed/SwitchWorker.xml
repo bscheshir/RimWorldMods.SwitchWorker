@@ -12,4 +12,5 @@
 	<SwitchWorker_CantWork_WorkDisabled>This work type is disabled</SwitchWorker_CantWork_WorkDisabled>
 	<SwitchWorker_CantWork_LowSkill>Low skill: req. {0}, has {1}</SwitchWorker_CantWork_LowSkill>
 	<SwitchWorker_CantWork_NoPath>Cannot reach the item</SwitchWorker_CantWork_NoPath>
+	<SwitchWorker_ContextMenuLabel>Change worker</SwitchWorker_ContextMenuLabel>
 </LanguageData>
