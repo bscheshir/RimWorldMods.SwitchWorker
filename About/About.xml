@@ -16,35 +16,35 @@
 		</li>
 	</modDependencies>
 	<description>
-		Позволяет вручную переназначить мастера для незавершенного предмета (заготовки).
+Позволяет вручную переназначить мастера для незавершенного предмета (заготовки).
 
-		Больше не нужно ждать, пока конкретный колонист вернется из лазарета, каравана или освободится от других дел, чтобы доделать брошенный в прошлом году шлем или куртку!
+Больше не нужно ждать, пока конкретный колонист вернется из лазарета, каравана или освободится от других дел, чтобы доделать брошенный в прошлом году шлем или куртку!
 
-		Назначить мастера для незавершённого предмета можно как из меню при выборе предмета, так и выбрав желаемую пешку, а затем вызвав контекстное меню для незаконченного предмета.
+Назначить мастера для незавершённого предмета можно как из меню при выборе предмета, так и выбрав желаемую пешку, а затем вызвав контекстное меню для незаконченного предмета.
 
-		При смене создателя остаток работы динамически пересчитывается на основе разницы навыков между старым и новым мастером, а также базового штрафа из настроек мода (по умолчанию теряется 25% времени работы, пересчёт от навыков на 75% эффективен).
+При смене создателя остаток работы динамически пересчитывается на основе разницы навыков между старым и новым мастером, а также базового штрафа из настроек мода (по умолчанию теряется 25% времени работы, пересчёт от навыков на 75% эффективен).
 
-		Вдохновлён модом "Switch Worker" от kathanon, полностью переписан под современные версии игры и снабжен гибкими настройками потери прогресса.
+Вдохновлён модом "Switch Worker" от kathanon, полностью переписан под современные версии игры и снабжен гибкими настройками потери прогресса.
 
-		Основные улучшения и отличия:
-		• Поддержка караванов и шаттлов: замена доступна у вещи, автор которой ушёл в караван или улетел на шаттле.
-		• Визуальный интерфейс: список выбора теперь содержит миниатюры колонистов.
-		• Новое контекстное меню: при выборе пешки и нажатии на заготовку можно сразу переназначить мастера.
-		• Полноценная локализация: добавлены официальные переводы (RU/EN) и внешние ресурсы для удобного перевода.
+Основные улучшения и отличия:
+• Поддержка караванов и шаттлов: замена доступна у вещи, автор которой ушёл в караван или улетел на шаттле.
+• Визуальный интерфейс: список выбора теперь содержит миниатюры колонистов.
+• Новое контекстное меню: при выборе пешки и нажатии на заготовку можно сразу переназначить мастера.
+• Полноценная локализация: добавлены официальные переводы (RU/EN) и внешние ресурсы для удобного перевода.
 
-		-----------------------------------------
-		Allows you to manually reassign a worker for any unfinished item (crafting bill).
+-----------------------------------------
+Allows you to manually reassign a worker for any unfinished item (crafting bill).
 
-		No more waiting for a specific colonist to recover in a hospital, return from a caravan, or finish other tasks just to complete a helmet or duster left abandoned last year!
+No more waiting for a specific colonist to recover in a hospital, return from a caravan, or finish other tasks just to complete a helmet or duster left abandoned last year!
 
-		You can assign a new worker either from the gizmo menu when selecting the unfinished item itself, or by selecting the desired pawn and opening the context menu for that item.
+You can assign a new worker either from the gizmo menu when selecting the unfinished item itself, or by selecting the desired pawn and opening the context menu for that item.
 
-		When switching creators, the remaining work is dynamically recalculated based on the skill difference between the old and new workers, along with a customizable base progress loss penalty from the mod settings (by default, 25% of work time is lost, and the skill-based recalculation has a 75% influence efficiency).
+When switching creators, the remaining work is dynamically recalculated based on the skill difference between the old and new workers, along with a customizable base progress loss penalty from the mod settings (by default, 25% of work time is lost, and the skill-based recalculation has a 75% influence efficiency).
 
-		Inspired by the original "Switch Worker" mod by kathanon, fully rewritten for modern game versions and equipped with flexible progress loss configuration.
+Inspired by the original "Switch Worker" mod by kathanon, fully rewritten for modern game versions and equipped with flexible progress loss configuration.
 
-		Key improvements and differences:
-		• Caravan &amp; Shuttle Support: changing workers is available even if the item's creator left the map via caravan or shuttle.
+Key improvements and differences:
+• Caravan &amp; Shuttle Support: changing workers is available even if the item's creator left the map via caravan or shuttle.
 • Visual Interface: the selection list now includes pawn thumbnails.
 • New Context Menu: select a colonist and click the unfinished item to switch workers directly.
 • Native Localization: features full out-of-the-box localization support (RU/EN) with external translation-friendly resources.
